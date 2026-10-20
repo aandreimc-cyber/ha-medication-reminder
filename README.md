@@ -37,18 +37,20 @@ Questions, setup help, or want to show off your setup? Come to [Discussions](htt
 ## Highlights
 
 - **Pets and people, all in the UI.** Add patients and their dose schedule from Settings, no YAML; entities auto-create per patient and survive restarts.
-- **Flexible scheduling.** Each dose daily, on specific days of the week, every N days, an on/off cycle (e.g. 21 on / 7 off), specific days of the month, or as-needed (PRN, no reminders), in 12h or 24h.
+- **Flexible scheduling.** Each dose daily, on specific days of the week, every N days, an on/off cycle (e.g. 21 on / 7 off), specific days of the month, or as-needed (PRN, no reminders), in 12h or 24h. Add an optional **start date** and **end date** to run a fixed-length course (e.g. a 7-day antibiotic) that begins and stops on its own, or give one dose **several times a day** in a single step and it splits into separate timed doses.
 - **As-needed (PRN) meds.** A "Log dose" button (and `log_dose` service) records each dose taken, with a last-taken timestamp, a doses-today count, and a supply decrement, so meds taken several times a day stay tracked. Optional **over-dose guard**: set a minimum interval and/or a daily cap, and a `problem` sensor warns (never blocks) when another dose now would be too soon or over the cap. A rolling 30-day **days this month** count per med helps with days-per-month limits, like keeping acute pain or migraine meds under about 10 days.
 - **Partial dose marking.** For a dose that groups several meds, mark it given while flagging one or more meds as skipped, so the skipped med's supply is not counted and the skip shows in history. No need to split a sometimes-missing med into its own dose. Use the `mark_given` service, or turn on optional per-med "skip" buttons that put it one tap away on the dashboard.
 - **Skip a dose for the day.** Intentionally skipping today's dose? A "Skip today" button on the reminder (and the `skip_today` service) clears it for the day: reminders and missed-dose nagging stop, but it is not counted as taken and no supply comes off. It resets at the daily reset, shows in history, and the status panel treats it as handled rather than overdue.
 - **Snooze a reminder.** Cannot take it this second? A "Remind me later" button on the reminder (and the `snooze` service) defers it by a configurable delay (default 30 min), then reminds again once if the dose is still not handled. The missed-dose escalation is deferred, not cancelled, so a snoozed-then-forgotten dose still escalates.
+- **Pause a medication.** Put a dose on hold (a vet says stop for now, or you are between prescriptions) without deleting it. An optional per-dose pause switch suspends its reminders, overdue flagging, and supply decrement while on, and the dose picks up exactly where it left off when you turn it back off. Off until you enable pause switches in [Settings](#settings-per-patient).
 - **Adjustable amount at mark time.** For a med whose dose varies (e.g. adjusted from a blood reading), turn on "Ask for amount when marking" on the dose. An amount input appears; set what you are about to take, mark given, and the supply decrements by that instead of the fixed amount. Off by default, so fixed-dose meds are unaffected.
 - **Glanceable, fail-safe status.** A per-patient red/green "needs attention" sensor that trips on elapsed time alone and errs toward "problem"; wire it to a panel, light, or siren.
-- **Actionable reminders.** Nagging, missed-dose escalation, and a "Mark given" button from the notification, routed to each patient's own notify target. Tapping the notification body (not the button) can open your meds dashboard. When several doses are due for the same patient at the same time, the reminders are grouped into one notification (optional) so you are not pinged several times at once.
-- **Supply & refill tracking.** Per-medication counts that decrement as doses are given, with doses-left, a run-out estimate, a low-stock red flag at your reorder threshold, and a refill reminder. Optionally track **refills remaining** on the prescription too: each refill counts one down, and the supply flags when the prescription is out and needs renewing. Per-dose amounts can be fractional (half a pill) and overridden per dose, and an optional per-unit cost surfaces value on hand, cost per dose, and a monthly estimate.
+- **Actionable reminders.** Nagging, missed-dose escalation, and a "Mark given" button from the notification, routed to each patient's own notify target. Tapping the notification body (not the button) can open your meds dashboard. When several doses are due for the same patient at the same time, the reminders are grouped into one notification (optional) so you are not pinged several times at once. For a critical med, an optional **strict** mode leaves only the Mark given action on the reminder, so it cannot be skipped or snoozed from the notification.
+- **Supply & refill tracking.** Per-medication counts that decrement as doses are given, with doses-left, a run-out estimate, a low-stock red flag at your reorder threshold, and a refill reminder. Optionally track **refills remaining** on the prescription too: each refill counts one down, and the supply flags when the prescription is out and needs renewing. Per-dose amounts can be fractional (half a pill) and overridden per dose, and an optional per-unit cost surfaces value on hand, cost per dose, and a monthly estimate. Each supply can carry a **unit or form** label (tablets, capsules, drops, ml, syringes, pens, or your own) that shows on the count and the dashboard.
 - **Per-medication detail.** Optional strength, brand, full name, "prescribed for", and a dosage summary per medication, plus a `medications` sensor that lists everything the patient takes for a ready-to-share "current medications" view to hand a vet or doctor.
 - **Next-dose sensor and calendar.** A `next_dose` timestamp and a read-only medication calendar per patient, handy for "remind me before" automations and seeing long cycles laid out.
 - **Weekly pill-box plan.** An optional per-day plan for filling a pill organiser: pick a day and see one table of each med and the amount to put in each time-slot compartment, computed for the actual date (every-N-days, cycles, and monthly schedules included). Off by default.
+- **Adherence streak.** An optional per-patient sensor counting the consecutive days every scheduled dose was handled, with the longest streak, the last-missed date, and a trailing 30-day adherence percentage as attributes, for an at-a-glance "how are we doing". Off by default.
 - **Zero-edit dashboard.** Auto-discovers every patient and dose, no names to maintain.
 - **Caregiver and admin dashboards.** Split day-to-day care from setup using Home Assistant's own user roles: hand a caregiver a non-admin user and a simplified, safe-to-share dashboard (mark doses given, log a PRN dose, refill a low supply, with no config and no editable counts), and keep an admin dashboard with the full per-patient setup audit, editable supply counts, and an audit trail of who marked or refilled. See [Roles & sharing](#roles--sharing).
 - **Localized UI.** The configuration screens follow your Home Assistant language, with German, Dutch, French, Spanish, Italian, and Russian alongside the English base (all but French community-contributed), and any untranslated text falling back to English. See [Languages](#languages).
@@ -97,7 +99,7 @@ one automation.
 
 1. **Settings, Devices & Services, Add Integration, Medication Reminder.**
 2. Enter the patient name (e.g. a pet or person), pick the **patient type** (Person / Dog / Cat / ..., which sets the icon), and the **notify target** (the person or group to remind). One patient per entry; add the integration again for more patients.
-3. On the entry, click **Configure** to **Add a dose** (pick a time, type the medications, and choose the **schedule**: days of the week - all days = daily - or every N days, an on/off cycle, specific days of the month, or as-needed/PRN). Repeat for each dose. **Edit a dose**, **Remove a dose**, **Add medication detail**, or open **Reminder settings** (type, notify target, time format, reset time, nag window/interval) there too.
+3. On the entry, click **Configure** to **Add a dose** (pick a time, type the medications, and choose the **schedule**: days of the week - all days = daily - or every N days, an on/off cycle, specific days of the month, or as-needed/PRN). Optionally give the dose **additional times** (the same meds several times a day, split into separate doses), a **start date** and **end date** for a fixed-length course, and **Ask for amount when marking** for a variable dose. Repeat for each dose. **Edit a dose**, **Remove a dose**, **Add medication detail**, or open **Reminder settings** (type, notify target, time format, reset time, nag window/interval) there too.
 
 ![Manage medications menu](https://raw.githubusercontent.com/magikh0e/ha-medication-reminder/main/images/managed-doses.png)
 
@@ -463,6 +465,8 @@ Each patient has its own **Configure, Reminder settings** with:
 - **Re-nag interval** - how often to re-remind within that window (default 15 min).
 - **Partial-dose skip buttons** - off by default. When on, each scheduled dose that groups two or more meds gains a one-tap "Mark given, skip <med>" button per med (see [How marking works](#how-marking-works-the-contract) below). Leave off to avoid the extra button entities if you never partially dose.
 - **Pill-box plan view** - off by default. When on, adds a per-day pill-organiser plan: a `sensor.<patient>_plan` with the day's meds and amounts per time slot, and a `number.<patient>_planoffset` to pick the day (0 = today). The bundled dashboards show it as a "Pill-box plan" card (a day stepper plus a table of each med and the amount per time slot), handy for prepping a weekly box.
+- **Pause switches** - off by default. When on, each scheduled dose gains a `switch.<patient>_<time>_<meds>_pause`; turn it on to suspend that dose (no reminders, no overdue flag, no supply decrement) until you turn it back off, for holding a med without deleting the dose. The bundled dashboards show a "Pause a medication" card.
+- **Adherence streak** - off by default. When on, adds `sensor.<patient>_streak`, the number of consecutive days all of that patient's scheduled doses were handled, with `longest_streak`, `last_missed`, `adherence_percent`, and `window_days` attributes. The bundled dashboards show it as an "Adherence streak" card.
 
 The reset time is applied by the integration; the nag window/interval are exposed
 as switch attributes that the companion automations read.
@@ -478,14 +482,15 @@ as switch attributes that the companion automations read.
 Optionally track how much of each medication you have on hand. In **Configure,
 Track a medication supply**, pick the medication from your doses, then set units
 on hand, units consumed per dose, a low-stock threshold, a refill amount,
-(optionally) a **cost per unit**, and (optionally) the number of **refills
-remaining** on the prescription. Change those later with **Edit a supply** in the
-same menu. Units consumed per dose accepts fractions (e.g. `0.5` for half a pill),
-and any single dose can override it with its own **Units consumed (this dose)**
-field, so a medication taken as half a pill on some days and a whole pill on others
-tracks stock correctly from **one** supply and one medication name (add two doses
-with the same medication, one per schedule). Each tracked
-medication then gets:
+(optionally) a **unit or form** label (tablets, capsules, drops, ml, syringes,
+pens, or a custom value), (optionally) a **cost per unit**, and (optionally) the
+number of **refills remaining** on the prescription. Change those later with
+**Edit a supply** in the same menu. Units consumed per dose accepts fractions
+(e.g. `0.5` for half a pill), and any single dose can override it with its own
+**Units consumed (this dose)** field, so a medication taken as half a pill on
+some days and a whole pill on others tracks stock correctly from **one** supply
+and one medication name (add two doses with the same medication, one per
+schedule). Each tracked medication then gets:
 
 - `number.<patient>_<med>_supply` - units on hand, settable. It **decrements when
   a dose containing that medication is marked given** (once per dose per day,
@@ -498,7 +503,9 @@ medication then gets:
   each press of the refill button counts it down by one, adding `refills_remaining`,
   `refills_configured`, and `refills_out` attributes. When it reaches zero the
   supply flags low (see `supplies_low` below) so you know to renew the prescription
-  before the next refill. Leave it at 0 to skip refill tracking.
+  before the next refill. Leave it at 0 to skip refill tracking. A **unit or form**
+  label set on the supply shows as the entity's unit of measurement and a `unit`
+  attribute, so the count reads in tablets, drops, ml, and the like.
 - `button.<patient>_<med>_refill` - a one-tap restock, instead of editing the
   number by hand. By default it sets the supply to its configured refill amount;
   turn on **Add on refill (package refill)** for that supply to instead add the
@@ -551,7 +558,7 @@ notify target for anything low.
 
 ## How marking works (the contract)
 
-- The integration publishes `switch.*` entities carrying `patient` / `patient_type` / `dose_time` / `medications` / `dose_units` / `days` / `schedule_type` / `interval_days` / `anchor_date` / `cycle_on` / `cycle_off` / `month_days` / `scheduled_today` / `skipped` / `skipped_today` / `snooze_until` / `ask_units` / `marked_units` / `notify_service` / `nag_minutes` / `nag_interval` / `time_format` / `given_at` attributes (a dose is only reminded, counted, or flagged overdue when `scheduled_today` is true, which respects day-of-week, every-N-days, on/off-cycle, and monthly schedules). Per patient it also publishes two binary sensors:
+- The integration publishes `switch.*` entities carrying `patient` / `patient_type` / `dose_time` / `medications` / `dose_units` / `days` / `schedule_type` / `interval_days` / `anchor_date` / `cycle_on` / `cycle_off` / `month_days` / `scheduled_today` / `skipped` / `skipped_today` / `snooze_until` / `paused` / `ask_units` / `marked_units` / `notify_service` / `nag_minutes` / `nag_interval` / `time_format` / `given_at` attributes (a dose is only reminded, counted, or flagged overdue when `scheduled_today` is true, which respects day-of-week, every-N-days, on/off-cycle, and monthly schedules). Per patient it also publishes two binary sensors:
   - `binary_sensor.<patient>_all_doses_given` (patient-type icon) - on when all of that patient's doses are **handled** today (given or skipped), with `total` / `given` / `skipped` / `skipped_doses` / `remaining` / `pending` attributes.
   - `binary_sensor.<patient>_needs_attention` (device class `problem`) - **red when a dose is overdue** (past its time by the nag window and still not given or skipped), green when all is well. It re-evaluates on a 60-second timer so it trips on elapsed time alone, and fails safe toward "problem". Attributes: `overdue` / `overdue_count`.
 - It also publishes `sensor.<patient>_next_dose` (timestamp of the next upcoming dose, with the medications as an attribute) and `calendar.<patient>_medication` (the schedule as calendar events). The entry offers **downloadable diagnostics** on its device page, and raises a **Repairs** warning if a tracked supply's medication matches no dose (so it would never decrement).
@@ -560,6 +567,7 @@ notify target for anything low.
 - "Mark given" flips the switch on; the daily reset flips all off at the configured reset time.
 - **Skip a dose for the day.** The `medication_reminder.skip_today` service (target the dose's switch) clears a dose for the current day without taking it: reminders and missed-dose alerts stop, but the dose is **not** recorded as given and **no** supply is deducted. It is a third state, carried on the switch's `skipped_today` attribute, so `needs_attention` does not flag it overdue and `all_doses_given` counts it as handled. It resets at the daily reset, and marking the dose given cancels the skip (restoring supply if it had been given first). The reminder and missed-dose notifications carry a **Skip today** button that calls this (re-import the blueprints to get it). This is separate from the partial-dose `skipped` list on `mark_given`, which skips one med while the dose is still taken.
 - **Snooze a reminder ("remind me later").** The `medication_reminder.snooze` service (target the dose's switch, optional `minutes`, default 30) defers a dose's reminder without marking it given or skipped. It records a `snooze_until` time on the switch, and the reminder automation pushes that dose's whole nag window and its missed-dose escalation out to the later of the dose time and the snooze, so the reminder goes quiet and comes back once, later, if the dose is still not handled. The escalation is **deferred, not cancelled**. Marking the dose given or skipped, and the daily reset, clear the snooze. The reminder and missed-dose notifications carry a **Remind me later** button (re-import the blueprints to get it), and the delay is a blueprint input. The glanceable "needs attention" panel is not affected by a snooze: it still shows a snoozed-but-untaken dose once past its window, since the dose does still need taking; snooze only quiets the phone reminder.
+- **Pause a dose.** Turn on a dose's pause switch (created when **Pause switches** is enabled in Reminder settings) to suspend it: while paused it is treated as not scheduled, so it does not remind, does not flag overdue, does not count in `all_doses_given`, and does not decrement supply. The dose carries a `paused` attribute, the state is restart-safe, and turning the pause switch back off resumes the dose from where it was, no re-setup. For holding a med (a vet says stop for now, or between prescriptions) without deleting and re-adding it.
 - To log a dose taken at a **different time** than now, call the `medication_reminder.mark_given` service (target the dose's switch) with a `given_at` time. The plain switch is "Take Now"; the service is the "Specify Time" equivalent. Correcting the time on an already-given dose just updates the timestamp (it does not re-warn or re-decrement supply).
 - **Adjustable amount at mark time.** For a med whose dose varies, turn on **Ask for amount when marking** on the dose (Add/Edit a dose, off by default). That creates a `number.<patient>_<time>_<meds>_amount` input; set it to the amount about to be taken, then mark the dose given any way (dashboard, notification, or service) and the matching supply decrements by that amount instead of the configured one. The switch carries the amount as a `marked_units` attribute, and the `mark_given` service also takes an optional `units` to pass it directly (handy from automations). The bundled dashboards show a "Dose amounts" card for the opted-in doses. It is off by default, so fixed-dose meds get no extra input.
 - **Partial dose (one med skipped).** For a dose that groups several meds, `mark_given` also takes an optional `skipped` list naming meds that were not taken this time. The dose is still marked given, but the supply for each skipped med is left alone, so you do not have to split a sometimes-missing med into its own dose to keep its count right. The skipped names show in the switch's `skipped` attribute and the given event, and clear on un-mark and the daily reset. Skips apply only when the dose is first marked (not on a later time-correction); the plain switch toggle marks the whole dose. Example:
@@ -620,6 +628,11 @@ safety-relevant behaviours:
 - **Missed-dose escalation.** Reminders nag every 15 min for 45 min, then escalate
   once as a time-sensitive "missed" alert, so an ignored reminder does not silently
   disappear.
+- **Strict reminders (critical meds).** An optional reminders-blueprint toggle that
+  leaves only the **Mark given** action on the reminder and missed-dose
+  notifications, dropping Skip today and Remind me later, so a critical dose cannot
+  be deferred or skipped straight from the phone. Off by default; re-import the
+  blueprint to get it.
 - **Early-dose / soft over-dose warning.** Marking a dose well before its scheduled
   time warns the caretaker and offers an **undo** button. The switch reports
   `minutes_early` on the `medication_reminder_dose_given` event so automations can
@@ -704,6 +717,13 @@ territory. A future version may move reminders into the integration itself.
 - Adjustable quantity at mark time (0.39.0): a per-dose "Ask for amount when marking" opt-in and a `units` option on `mark_given`, for a med whose dose varies, so the supply decrements by the amount actually taken. Off by default. (Requested by GitHub user ph-dekeyser, tracked in #35.)
 - Grouped reminders by time (0.40.0): when several doses are due for one patient at the same time, the reminder blueprint sends one combined notification (tap to open the dashboard) instead of one per dose. On by default, toggleable; single-dose reminders and the missed alert are unchanged. (Requested by GitHub user ph-dekeyser, tracked in #36.)
 - Weekly pill-box plan view (0.41.0): an opt-in per-day plan for filling a pill organiser, one table of each med and the amount per time slot for a chosen day, computed for the actual date (every-N-days, cycles, monthly included). Adds a plan sensor and a day-offset number; the bundled dashboards show it as a "Pill-box plan" card. Off by default. (Requested by GitHub user ph-dekeyser, tracked in #37.)
+- Pause a medication (0.42.0): an optional per-dose pause switch that suspends a dose's reminders, overdue flagging, and supply decrement while on, and resumes it untouched when turned off, for holding a med without deleting the dose. Off until enabled in Reminder settings. (Requested by a community member on the forum, tracked in #41.)
+- Start date honoured for every schedule type (0.42.0): a dose's start date (anchor) is now respected for daily and weekly schedules too, not only every-N-days and cycles, so a dose set to begin later no longer starts reminding from today. (Tracked in #42.)
+- Strict reminders (0.43.0): an optional reminders-blueprint toggle that drops the Skip today and Remind me later actions from the notification, leaving only Mark given, so a critical dose cannot be deferred or skipped from the phone. Off by default. (Requested by community member Tadies on the forum, tracked in #43.)
+- Multiple times per dose (0.44.0): an "additional times" field on Add a dose that creates the same medications at several times a day in one step, each as its own timed dose. (Requested by GitHub user Jurich2004, tracked in #44.)
+- Supply unit / form labels (0.44.0): an optional unit or form on each supply (tablets, capsules, drops, ml, syringes, pens, or a custom value), shown as the supply entity's unit of measurement and on the dashboard. (Tracked in #48.)
+- Adherence streak (0.45.0): an optional per-patient sensor counting consecutive days every scheduled dose was handled, with longest-streak, last-missed, and a trailing 30-day adherence percentage, plus an "Adherence streak" dashboard card. Off by default. (Tracked in #39.)
+- End date for a dose (0.46.0): an optional end date mirroring the start date, so a fixed-length course (e.g. 7 days) stops reminding on its own, honoured for every schedule type. (Requested by GitHub user Jurich2004, tracked in #50.)
 
 ## Acknowledgements
 
