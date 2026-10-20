@@ -8,11 +8,11 @@
   "config": {
     "step": {
       "user": {
-        "title": "Patiënt toegoeven",
-        "description": "Maak een medicatieschema. Selecteer het patiënt soort en wie er meldingen dient te ontvangen, daarna kun je een dosering toevoegen.",
+        "title": "Patiënt toevoegen",
+        "description": "Maak een medicatieschema voor een persoon of huisdier. Kies het soort patiënt en wie de meldingen ontvangt. Daarna kun doseringen worden toegevoegd.",
         "data": {
           "patient": "Patiëntnaam",
-          "patient_type": "Patiënt soort",
+          "patient_type": "Soort patiënt",
           "notify": "Ontvanger van meldingen (persoon of groep)"
         }
       }
@@ -26,15 +26,17 @@
       "no_doses": "Voeg eerst een dosering toe, er zijn nog geen doseringen om aan te passen.",
       "no_medications": "Voeg eerst een dosering toe, de medicijninformatie wordt automatisch gekoppeld aan bestaande medicijnen.",
       "no_medication_detail": "Voeg eerst medicijninformatie toe, er is nog niks om aan te passen.",
-      "no_supplies": "Hou eerst een dosering bij, er is nog niks om aan te passen."
+      "no_supplies": "Voeg eerst een medicijnvoorraad toe. Er is nog geen voorraad om te bewerken."
     },
     "error": {
       "duplicate_dose": "Een dosering met deze tijd en dit medicijn bestaat al. Gebruik een andere tijd of voeg deze samen in een enkele dosering.",
-      "supply_exists": "Dit medicijn bestaat al een medicijnvoorraad voor, pas deze aan om het te veranderen."
+      "supply_exists": "Voor dit medicijn wordt al een voorraad bijgehouden. Kies ‘Voorraad bewerken’ om deze aan te passen.",
+      "invalid_time": "Een van de extra tijdstippen is ongeldig. Gebruik de 24-uursnotatie UU:MM, gescheiden door komma’s, bijvoorbeeld 14:00, 20:00.",
+      "end_before_start": "De einddatum ligt vóór de startdatum. Kies een einddatum op óf na de startdatum, of wis één van beide datums."
     },
     "step": {
       "init": {
-        "title": "Beheer Medicijnen",
+        "title": "Medicijnen beheren",
         "menu_options": {
           "doses": "Doseringen",
           "supplies": "Voorraad",
@@ -68,7 +70,7 @@
       },
       "add_dose": {
         "title": "Dosering toevoegen",
-        "description": "Selecteer de tijd en medicijnen, kies dan hoe vaak deze herhaalt dienen te worden: welke dagen van de week (dagelijks betekend alle dagen), elke N dagen of een cyclus.",
+        "description": "Kies een tijdstip samen met een medicijn. Stel vervolgens in hoe de dosering wordt herhaald: op gekozen weekdagen (alle dagen = dagelijks), om de zoveel dagen óf volgens een cyclus van gebruiks- en rustdagen, vanaf een startdatum.",
         "data": {
           "time": "Tijd",
           "meds": "Medicijnen",
@@ -77,16 +79,22 @@
           "interval_days": "Elke N dagen (voor tussenpoos)",
           "cycle_on": "Gebruiksdagen (voor een cyclus)",
           "cycle_off": "Stopdagen (voor een cyclus)",
-          "anchor_date": "Startdatum (voor een cyclus of elke N dagen)",
+          "anchor_date": "Startdatum (optioneel; geen herinneringen vóór deze datum)",
           "min_interval_hours": "Minimale hoeveelheid uren tussen doseringen (Alleen bij 'indien nodig'; 0 = geen limiet)",
           "max_per_day": "Maximale dagelijkse doseringen (Alleen bij 'Indien nodig'; 0 = geen limiet)",
-          "dose_units": "Dosering hoeveelheid (huidige dosering)"
+          "dose_units": "Verbruikte eenheden (deze dosis)",
+          "ask_units": "Hoeveelheid vragen bij het registreren",
+          "additional_times": "Extra tijdstippen (optioneel)",
+          "end_date": "Einddatum (optioneel; daarna geen herinneringen)"
         },
         "data_description": {
-          "meds": "Onderbreek meerdere medicijnen met een &, +, of een komma. Een schuine streep werkt alleen als deze omringt is met spaties, dus 'Carbimazol 5mg (1/2)' blijft een enkele dosering.",
+          "meds": "Scheid meerdere medicijnen met &, + of een komma. Een schuine streep scheidt alleen als deze omringt is met spaties, dus ‘Carbimazol 5mg (1/2)’ zal intact blijven.",
           "min_interval_hours": "Voor medicijnen met een 'Indien nodig' dosering, waarschuw als een dosering binnen dit aantal uren geregistreerd wordt. Bijvoorbeeld bijeen pijnstiller die niet vaker dan elke 4 uur dient te worden genomen.",
           "max_per_day": "Voor medicijnen met een 'Indien nodig' dosering, waarschuw wanneer de maximale dagelijkse dosering overschreden wordt.",
-          "dose_units": "Pas de dosering hoeveelheid voor de huidige dosering aan. Laat op '0' staan om niets te veranderen, voor een halve pil; gebruik een punt als decimaalteken, bijvoorbeeld '0.5'."
+          "dose_units": "Pas de dosering hoeveelheid voor de huidige dosering aan. Laat op '0' staan om niets te veranderen, voor een halve pil; gebruik een punt als decimaalteken, bijvoorbeeld '0.5'.",
+          "ask_units": "Schakel dit in als de hoeveelheid medicijnen per dosering kan verschillen. Bij het registreren kan de werkelijk toegediende hoeveelheid ingevuld worden. De voorraad wordt met deze hoeveelheid verminderd in plaats van met de ingestelde hoeveelheid. Uitgeschakeld: altijd de ingestelde hoeveelheid gebruiken.",
+          "additional_times": "Maak dezelfde dosis in één keer aan voor meerdere tijdstippen, bijvoorbeeld voor medicatie die tweemaal per dag wordt ingenomen. Vul extra tijdstippen in de 24-uursnotatie in, gescheiden door komma’s (14:00, 20:00). Elk tijdstip krijgt een eigen dosis met dezelfde medicatie en instellingen. Laat leeg voor één tijdstip.",
+          "end_date": "Optioneel. Stop de herinneringen na deze datum, bijvoorbeeld bij een kuur van 7 dagen of 3 maanden. Laat leeg om onbeperkt door te gaan."
         }
       },
       "edit_dose": {
@@ -97,7 +105,7 @@
       },
       "edit_dose_details": {
         "title": "Dosering bijwerken",
-        "description": "Pas deze dosering aan en sla op om deze bij te werken. Als alleen het schema wordt gewijzigd wordt de entitieit behoude; bij tijd of medicatie veranderingen wordt een nieuwe entiteit aangemaakt (geschiedenis gaat hierbij verloren).",
+        "description": "Wijzig de dosering en sla de wijzigingen op. Als alleen het schema aanpast wordt, blijft dezelfde entiteit behouden. Bij een wijziging van het tijdstip of de medicijnen wordt een nieuwe entiteit aangemaakt en gaat de geschiedenis verloren.",
         "data": {
           "time": "Tijd",
           "meds": "Medicijnen",
@@ -106,16 +114,20 @@
           "interval_days": "Elke N dagen (voor tussenpoos)",
           "cycle_on": "Gebruiksdagen (voor een cyclus)",
           "cycle_off": "Stopdagen (voor een cyclus)",
-          "anchor_date": "Startdatum (voor een cyclus of elke N dagen)",
+          "anchor_date": "Startdatum (optioneel; geen herinneringen vóór deze datum)",
           "min_interval_hours": "Minimale hoeveelheid uren tussen doseringen (Alleen bij 'indien nodig'; 0 = geen limiet)",
           "max_per_day": "Maximale dagelijkse doseringen (Alleen bij 'Indien nodig'; 0 = geen limiet)",
-          "dose_units": "Dosering hoeveelheid (huidige dosering)"
+          "dose_units": "Verbruikte eenheden (deze dosis)",
+          "ask_units": "Vraag om de doserings hoeveelheid",
+          "end_date": "Einddatum (optioneel; daarna geen herinneringen)"
         },
         "data_description": {
-          "meds": "Onderbreek meerdere medicijnen met een &, +, of een komma. Een schuine streep werkt alleen als deze omringt is met spaties, dus 'Carbimazol 5mg (1/2)' blijft een dosering.",
+          "meds": "Scheid meerdere medicijnen met &, + of een komma. Een schuine streep scheidt alleen als deze omringt is met spaties, dus ‘Carbimazol 5mg (1/2)’ zal intact blijven.",
           "min_interval_hours": "Voor medicijnen met een 'Indien nodig' dosering, waarschuw als een dosering binnen dit aantal uren geregistreerd wordt. Bijvoorbeeld bijeen pijnstiller die niet vaker dan elke 4 uur dient te worden genomen.",
           "max_per_day": "Voor medicijnen met een 'Indien nodig' dosering, waarschuw wanneer de maximale dagelijkse dosering overschreden wordt.",
-          "dose_units": "Pas de dosering hoeveelheid voor de huidige dosering aan. Laat op '0' staan om niets te veranderen, voor een halve pil; gebruik een punt als decimaalteken, bijvoorbeeld '0.5'."
+          "dose_units": "Pas de dosering hoeveelheid voor de huidige dosering aan. Laat op '0' staan om niets te veranderen, voor een halve pil; gebruik een punt als decimaalteken, bijvoorbeeld '0.5'.",
+          "ask_units": "Schakel dit in als de hoeveelheid medicijnen per dosering kan verschillen. Bij het registreren kan de werkelijk toegediende hoeveelheid ingevuld worden. De voorraad wordt met deze hoeveelheid verminderd in plaats van met de ingestelde hoeveelheid. Uitgeschakeld: altijd de ingestelde hoeveelheid gebruiken.",
+          "end_date": "Optioneel. Stop de herinneringen na deze datum, bijvoorbeeld bij een kuur van 7 dagen of 3 maanden. Laat leeg om onbeperkt door te gaan."
         }
       },
       "remove_dose": {
@@ -126,23 +138,27 @@
       },
       "add_supply": {
         "title": "Medicijnvoorraad bijhouden",
-        "description": "Tel hoeveel medicijnen er voorraadig zijn. Deze telt af wanneer een dosering gemarkeerd wordt als genomen, bevat een optionele waarschuwing voor wanneer de drempelwaarde bereikt wordt en berekent een einddatum op basis van de huidige voorraad.",
+        "description": "Houd bij hoeveel er van een medicijn op voorraad is. De voorraad wordt verminderd wanneer een dosis met dit medicijn als ingenomen wordt geregistreerd. Bevat een optionele waarschuwing voor wanneer een lage voorraad bereikt wordt samen met een geschatte datum waarop de voorraad opraakt.",
         "data": {
           "supply_med": "Medicijnnaam",
           "supply_units": "Huidige voorraad",
           "supply_per_dose": "Eenheden per dosis",
-          "supply_threshold": "Lage drempelwaarde",
+          "supply_threshold": "Drempelwaarde voor een lage voorraad",
           "supply_refill_to": "Bijvulhoeveelheid (Maximale hoeveelheid om de telling naar terug te zetten)",
-          "supply_refill_add": "Bijvulhoeveelheid (Verpakkingsgrote)",
-          "supply_cost": "Prijs per dosering (Laat op '0' staan om niet bij te houden)"
+          "supply_refill_add": "Bijvulhoeveelheid (Verpakkingsgrote om op te tellen bij de totale voorraad)",
+          "supply_cost": "Prijs per eenheid (0 = niet bijhouden)",
+          "supply_refills": "Resterende herhalingen op voorschrift (0 = niet bijhouden)",
+          "supply_unit": "Eenheid / toedieningsvorm (optioneel)"
         },
         "data_description": {
           "supply_refill_add": "Tel bij een bijvulling een individuele verpakking op bij de totale hoeveelheid (bijv. 17 + 30 = 47), in plaats van terug te vallen op de maximale hoeveelheid.",
-          "supply_cost": "Prijs per dosering (bijv. een pil of ml) in de gewenste valuta. Dit wordt gebruikt om de voorraad waarde en prijs per dosering te berekenen. Laat op '0' staan om niet te berekenen."
+          "supply_cost": "Prijs van één eenheid (bijvoorbeeld een tablet of ml) in de gewenste valuta. Dit wordt gebruikt voor de voorraadwaarde en de kosten per dosis. Laat op 0 staan om de kosten niet bij te houden.",
+          "supply_refills": "Het aantal herhalingen dat nog op het voorschrift staat. Telkens wanneer de bijvulknop wordt gebruikt, neemt dit aantal met één af. Bij nul wordt een waarschuwing weergegeven zodat er tijdig een nieuw voorschrift kan worden aangevraagd. Laat op 0 staan om niet bij te houden.",
+          "supply_unit": "De eenheid om deze voorraad te omschrijven. (tabletten, druppels, ml, spuiten, pennen enzovoort). Kies een eenheid of vul er zelf een in. Deze verschijnt naast de voorraad en de dosering, bijvoorbeeld ‘30 tabletten’. Laat leeg om alleen een getal te tonen."
         }
       },
       "edit_supply": {
-        "title": "Dosering bijwerken",
+        "title": "Voorraad bewerken",
         "data": {
           "supply_med": "Medicijn"
         }
@@ -153,14 +169,18 @@
         "data": {
           "supply_units": "Huidige voorraad",
           "supply_per_dose": "Eenheden per dosis",
-          "supply_threshold": "Lage drempelwaarde",
+          "supply_threshold": "Drempelwaarde voor een lage voorraad",
           "supply_refill_to": "Bijvulhoeveelheid (Maximale hoeveelheid om de telling naar terug te zetten)",
-          "supply_refill_add": "Bijvulhoeveelheid (Verpakkingsgrote)",
-          "supply_cost": "Prijs per dosering (Laat op '0' staan om niet bij te houden)"
+          "supply_refill_add": "Bijvulhoeveelheid (Verpakkingsgrote om op te tellen bij de totale voorraad)",
+          "supply_cost": "Prijs per eenheid (0 = niet bijhouden)",
+          "supply_refills": "Resterende herhalingen op voorschrift (0 = niet bijhouden)",
+          "supply_unit": "Eenheid / toedieningsvorm (optioneel)"
         },
         "data_description": {
           "supply_refill_add": "Tel bij een bijvulling een individuele verpakking op bij de totale hoeveelheid (bijv. 17 + 30 = 47), in plaats van terug te vallen op de maximale hoeveelheid.",
-          "supply_cost": "Prijs per dosering (bijv. een pil of ml) in de gewenste valuta. Dit wordt gebruikt om de voorraad waarde en prijs per dosering te berekenen. Laat op '0' staan om niet te berekenen."
+          "supply_cost": "Prijs van één eenheid (bijvoorbeeld een tablet of ml) in de gewenste valuta. Dit wordt gebruikt voor de voorraadwaarde en de kosten per dosis. Laat op 0 staan om de kosten niet bij te houden.",
+          "supply_refills": "Het aantal herhalingen dat nog op het voorschrift staat. Telkens wanneer de bijvulknop wordt gebruikt, neemt dit aantal met één af. Bij nul wordt een waarschuwing weergegeven zodat er tijdig een nieuw voorschrift kan worden aangevraagd. Laat op 0 staan om niet bij te houden.",
+          "supply_unit": "De eenheid om deze voorraad te omschrijven. (tabletten, druppels, ml, spuiten, pennen enzovoort). Kies een eenheid of vul er zelf een in. Deze verschijnt naast de voorraad en de dosering, bijvoorbeeld ‘30 tabletten’. Laat leeg om alleen een getal te tonen."
         }
       },
       "remove_supply": {
@@ -189,7 +209,7 @@
       },
       "edit_medication_details": {
         "title": "{medication} informatie bijwerken",
-        "description": "extra informatie voor {medication} aanpassen.",
+        "description": "Pas de extra informatie voor {medication} aan.",
         "data": {
           "full_name": "Volledige naam (optioneel)",
           "strength": "Sterkte (bijv. 5mg)",
@@ -206,17 +226,25 @@
       },
       "settings": {
         "title": "Meldingsinstellingen",
-        "description": "Patiënt soort, wie dient een melding te ontvangen, tijdsnotatie, wanneer een nieuwe dag begint en hoe snel meldingen worden herhaalt.",
+        "description": "Soort patiënt soort, wie dient een melding te ontvangen, tijdsnotatie, wanneer een nieuwe dag begint en hoe snel meldingen worden herhaald.",
         "data": {
-          "patient_type": "Patiënt soort",
+          "patient_type": "Soort patiënt",
           "notify": "Ontvanger van meldingen (persoon of groep)",
           "time_format": "Tijdsnotatie",
-          "reset_time": "Dagelijkse reset tijd",
-          "nag_minutes": "Zeurvenster (aantal minuten na dosering)",
-          "nag_interval": "Zeur opnieuw na (aantal minuten)"
+          "reset_time": "Dagelijkse resettijd",
+          "nag_minutes": "Herinneringsvenster (hoeveelheid minuten na de dosis)",
+          "nag_interval": "Herinnering herhalen om de (minuten)",
+          "skip_buttons": "Knoppen om één dosering over te slaan",
+          "plan_view": "Medicijndoosplanning",
+          "pause_switches": "Pauzeschakelaars",
+          "streak": "Reeks dagen met correcte inname"
         },
         "data_description": {
-          "nag_interval": "Gebruik een vermenigvuldiging van 5; elke vijf minuten wordt er voor een melding gekeken, waardes hier onder zullen minder consistent verstuurd worden."
+          "nag_interval": "Gebruik een veelvoud van 5. elke vijf minuten wordt er voor een melding gekeken, andere waardes zullen minder consistent verstuurd worden.",
+          "skip_buttons": "Voeg een knop toe aan doseringen met twee of meer medicijnen om een individueel medicijn over te slaan. De voorraad van het overgeslagen medicijn wordt niet verminderd. Standaard uitgeschakeld.",
+          "plan_view": "Maak een dagplanning om een medicijndoos te vullen. Dit bevat een planningssensor en een getal om dagen te kiezen (0 = vandaag). De meegeleverde dashboards tonen per dag de medicijnen en hoeveelheden voor elk tijdstip. Standaard uitgeschakeld.",
+          "pause_switches": "Voeg aan alle geplande doseringen een pauzeschakelaar toe. Wanneer deze is inschakelt worden de herinneringen onderbroken. Deze dosering telt niet als gemist en er wordt geen voorraad verminderd. Deze schakelaar wordt niet vanuit zichzelf uitgeschakelt, dit verschilt van ‘vandaag overslaan’, wat enkel één dag geldt. Standaard uitgeschakeld.",
+          "streak": "Voeg per patiënt een sensor toe voor het aantal opeenvolgende dagen waarop alle geplande doseringen zijn ingenomen. Dit bevat de langste reeks, de laatste gemiste dag en het innamepercentage over de afgelopen 30 dagen. Een overgeslagen dosering behoudt de reeks maar verlaagt het percentage; een gemiste dosering onderbreekt de reeks. Standaard uitgeschakeld."
         }
       }
     }
