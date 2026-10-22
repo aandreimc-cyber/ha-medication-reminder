@@ -690,6 +690,7 @@ territory. A future version may move reminders into the integration itself.
 **Planned:**
 
 - Optional in-integration notifications/nagging (so the YAML companion automations become optional).
+- Localized entity and sensor names: move the hardcoded entity names onto Home Assistant's entity-translation keys so they follow the HA language like the config UI already does. This is the self-contained half of #49; the notification-text half rides along with the in-integration notifications item above, since that text lives in the blueprint YAML. Gathering interest on #49 before building.
 - Persistent dose attribution: "given by" and "refilled by" surfaced as attributes on the dose and refill entities, so who did what shows without opening the Logbook (the 0.26.0 admin dashboard reads this from History and the Logbook today).
 
 **Shipped from the roadmap:**
