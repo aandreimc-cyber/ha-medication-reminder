@@ -664,7 +664,7 @@ now would be too soon or over the cap (the "no less than 4 hours apart" case).
 
 The configuration UI follows your Home Assistant language. English is the source,
 with **German** (`de`), **Dutch** (`nl`), **French** (`fr`), **Spanish** (`es`),
-**Italian** (`it`), and **Russian** (`ru`) included; all but French are community-contributed. Any string a locale has not translated yet
+**Italian** (`it`), **Russian** (`ru`), and **Swedish** (`sv`) included; all but French are community-contributed. Any string a locale has not translated yet
 falls back to English, so a partial translation is always safe.
 
 Want your language added? It is a single-file pull request: copy
@@ -742,8 +742,8 @@ option (also requested by GitHub user **DarkVeter**). Thanks for sharing it.
 The day-of-month / monthly schedule type grew from a request by Home Assistant
 Community user **ggaltqq** for more schedule options.
 
-The **German, Dutch, Spanish, Italian, and Russian translations** were contributed by GitHub users
-**RookieIVG** (`de`), **VGrol** (`nl`), **markjimenezpy** (`es`), **apilone** (`it`), and **interkom** (`ru`), after **interkom** asked for
+The **German, Dutch, Spanish, Italian, Russian, and Swedish translations** were contributed by GitHub users
+**RookieIVG** (`de`), **VGrol** (`nl`), **markjimenezpy** (`es`), **apilone** (`it`), **interkom** (`ru`), and **el97** (`sv`), after **interkom** asked for
 multi-language support. Thanks for making the integration usable in more
 languages, and for the clean, complete locale files.
 
