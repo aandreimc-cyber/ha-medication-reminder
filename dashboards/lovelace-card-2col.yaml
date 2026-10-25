@@ -131,7 +131,8 @@ cards:
                 {{ s.entity_id }}
                 {% endfor %}
             sort:
-              method: name
+              method: attribute
+              attribute: dose_time
 
           # Adjustable-quantity doses (opt-in): set the amount about to be taken,
           # then Mark given uses it. Only for doses with "Ask for amount when
@@ -153,7 +154,8 @@ cards:
                 {{ n.entity_id }}
                 {% endfor %}
             sort:
-              method: name
+              method: attribute
+              attribute: dose_time
           # Partial dose (opt-in): "mark given, skip <med>" per med, for doses that
           # group 2+ meds. Shows only when Reminder settings has the skip-buttons
           # option on and the dose is due and not yet given; empty/hidden otherwise.
@@ -185,7 +187,8 @@ cards:
                 {% endif %}
                 {% endfor %}
             sort:
-              method: name
+              method: attribute
+              attribute: dose_time
 
           # Pause (opt-in): a toggle per scheduled dose to suspend a med until
           # resumed (no reminders, not overdue, no supply counted, kept paused
@@ -202,7 +205,8 @@ cards:
                 {{ s.entity_id }}
                 {% endfor %}
             sort:
-              method: name
+              method: attribute
+              attribute: dose_time
 
           # Adherence streak (opt-in): consecutive days every scheduled dose was
           # taken; longest streak / last missed / 30-day adherence as attributes.

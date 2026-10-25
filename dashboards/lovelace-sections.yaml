@@ -126,7 +126,8 @@ views:
                 {{ s.entity_id }}
                 {% endfor %}
             sort:
-              method: name
+              method: attribute
+              attribute: dose_time
           # 3b2. Adjustable-quantity doses (opt-in): set the amount about to be
           # taken, then Mark given uses it. Only for doses with "Ask for amount
           # when marking" turned on; hidden otherwise.
@@ -147,7 +148,8 @@ views:
                 {{ n.entity_id }}
                 {% endfor %}
             sort:
-              method: name
+              method: attribute
+              attribute: dose_time
           # 3c. Partial dose (opt-in): "mark given, skip <med>" per med, for doses
           # that group 2+ meds. Shows only when Reminder settings has the skip-buttons
           # option on and the dose is due and not yet given; empty/hidden otherwise.
@@ -179,7 +181,8 @@ views:
                 {% endif %}
                 {% endfor %}
             sort:
-              method: name
+              method: attribute
+              attribute: dose_time
           # 3d. Pause (opt-in): a toggle per scheduled dose to suspend a med until
           # resumed (no reminders, not overdue, no supply counted, kept paused
           # across days). Shows only when the pause option is on; hidden otherwise.
@@ -195,7 +198,8 @@ views:
                 {{ s.entity_id }}
                 {% endfor %}
             sort:
-              method: name
+              method: attribute
+              attribute: dose_time
           # Adherence streak (opt-in): consecutive days every scheduled dose was
           # taken; longest streak / last missed / 30-day adherence as attributes.
           # Shows only when the streak option is on; hidden otherwise.
